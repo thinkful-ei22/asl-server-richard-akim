@@ -3,10 +3,15 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const passport = require('passport');
 
 const { PORT, CLIENT_ORIGIN } = require('./config');
 const { dbConnect } = require('./db-mongoose');
-// const {dbConnect} = require('./db-knex');
+const localStrategy = require('./passport/local');
+const jwtStrategy = require('./passport/jwt');
+
+const userRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
@@ -21,6 +26,14 @@ app.use(
     origin: CLIENT_ORIGIN
   })
 );
+
+app.use(express.json());
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
+app.use('/api/user', userRouter);
+app.use('/api', authRouter);
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
