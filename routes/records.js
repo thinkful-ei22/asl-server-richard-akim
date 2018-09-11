@@ -16,9 +16,10 @@ router.post("/", jwtAuth, (req, res, next) => {
   console.log(req.user);
   const userId = req.user.id;
   const questionId = req.body.questionId;
+  console.log(questionId);
   const userCorrect = req.body.correct;
   //we check if the user already has a record for this question
-  Record.findOne({ userId, questionId })
+  Record.findOne({ $and: [{ questionId }, { userId }] })
     .then(response => {
       //in case that this is the first time the user is answering this question
       if (!response && !userCorrect) {
@@ -40,8 +41,7 @@ router.post("/", jwtAuth, (req, res, next) => {
       else if (response && !userCorrect) {
         return Record.findOneAndUpdate(
           {
-            questionId,
-            userId
+            $and: [{ questionId }, { userId }]
           },
           { $inc: { incorrect: 1 } },
           { new: true }
@@ -49,8 +49,7 @@ router.post("/", jwtAuth, (req, res, next) => {
       } else {
         return Record.findOneAndUpdate(
           {
-            questionId,
-            userId
+            $and: [{ questionId }, { userId }]
           },
           { $inc: { correct: 1 } },
           { new: true }

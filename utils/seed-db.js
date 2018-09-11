@@ -16,15 +16,15 @@ mongoose
     console.info("Dropping Database");
     return mongoose.connection.db.dropDatabase();
   })
-  .then(() => {
-    console.log("Seeding Users");
-    return User.insertMany(seedUsers);
-  })
+  // .then(() => {
+  //   console.log("Seeding Users");
+  //   return User.insertMany(seedUsers);
+  // })
   .then(() => {
     console.info("Seeding Database");
     return Promise.all([
-      Question.insertMany(seedQuestions),
-      Record.insertMany(seedRecords)
+      Question.insertMany(seedQuestions)
+      // Record.insertMany(seedRecords)
     ]);
   })
   .then(() => {
