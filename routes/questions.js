@@ -5,9 +5,9 @@ const router = express.Router();
 const Question = require('../models/question');
 
 router.get('/', (req, res, next) => {
-  console.log('hello');
-  Question.find()
-    .then(question => res.json(question))
+  Question.aggregate([ { $sample: { size: 1 } } ])
+  // Question.findOne()
+    .then(question => res.json(question[0]))
     .catch(err => next(err));
 });
 
