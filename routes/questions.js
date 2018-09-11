@@ -6,7 +6,6 @@ const Question = require('../models/question');
 
 router.get('/', (req, res, next) => {
   Question.aggregate([ { $sample: { size: 1 } } ])
-  // Question.findOne()
     .then(question => res.json(question[0]))
     .catch(err => next(err));
 });
