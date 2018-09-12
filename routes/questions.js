@@ -47,6 +47,7 @@ router.put('/reset', jwtAuth, (req, res, next) => {
 
   Question.find()
     .then(result => {
+      
       let questionArray = [];
       for (let i = 0; i < result.length; i++) {
         questionArray.push(result[i]);
@@ -62,7 +63,9 @@ router.put('/reset', jwtAuth, (req, res, next) => {
       });
       return questions;
     })
-    .then(array => User.findOneAndUpdate({ _id: userId }, {$set: {questions: array}}))
+    .then(array => {
+      return User.findOneAndUpdate({ _id: userId }, {$set: {questions: array}}, { new: true });  
+    })
     .then(result => {
       if (result) {
         res.status(205).end();
