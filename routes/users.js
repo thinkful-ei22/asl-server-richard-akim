@@ -84,12 +84,26 @@ router.post('/', (req, res, next) => {
 
   let { username, password, name = '' } = req.body;
 
+  const shuffle = (array) => {
+    let currentIndex = array.length, temporaryValue, randomIndex;
+    while(0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  };
+
   return Promise.all([User.hashPassword(password), Question.find()])
     .then(([digest, res]) => {
       let questionArray = [];
       for (let i = 0; i < res.length; i++) {
         questionArray.push(res[i]);
       }
+      questionArray = shuffle(questionArray);
       let questions = questionArray.map((question, index) => {
         return ({
           imageURL: question.imageURL,
