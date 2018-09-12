@@ -1,13 +1,13 @@
-const express = require("express");
+const express = require('express');
 
-const User = require("../models/user");
-const Question = require("../models/question");
+const User = require('../models/user');
+const Question = require('../models/question');
 
 const router = express.Router();
 
 // Post to register a new user
-router.post("/", (req, res, next) => {
-  const requiredFields = ["username", "password"];
+router.post('/', (req, res, next) => {
+  const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -16,9 +16,9 @@ router.post("/", (req, res, next) => {
     return next(err);
   }
 
-  const stringFields = ["username", "password", "name"];
+  const stringFields = ['username', 'password', 'name'];
   const nonStringField = stringFields.find(
-    field => field in req.body && typeof req.body[field] !== "string"
+    field => field in req.body && typeof req.body[field] !== 'string'
   );
 
   if (nonStringField) {
@@ -34,7 +34,7 @@ router.post("/", (req, res, next) => {
   // trimming them and expecting the user to understand.
   // We'll silently trim the other fields, because they aren't credentials used
   // to log in, so it's less of a problem.
-  const explicityTrimmedFields = ["username", "password"];
+  const explicityTrimmedFields = ['username', 'password'];
   const nonTrimmedField = explicityTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
   );
@@ -55,7 +55,7 @@ router.post("/", (req, res, next) => {
 
   const tooSmallField = Object.keys(sizedFields).find(
     field =>
-      "min" in sizedFields[field] &&
+      'min' in sizedFields[field] &&
       req.body[field].trim().length < sizedFields[field].min
   );
   if (tooSmallField) {
@@ -69,7 +69,7 @@ router.post("/", (req, res, next) => {
 
   const tooLargeField = Object.keys(sizedFields).find(
     field =>
-      "max" in sizedFields[field] &&
+      'max' in sizedFields[field] &&
       req.body[field].trim().length > sizedFields[field].max
   );
 
@@ -82,15 +82,23 @@ router.post("/", (req, res, next) => {
     return next(err);
   }
 
-  let { username, password, name = "" } = req.body;
+  let { username, password, name = '' } = req.body;
 
-  return Promise.all([User.hashPassword(password), Question.find().toArray()])
-    .then(([digest, questionArray]) => {
-      console.log(`1. digest: ${digest}, questionArray: ${questionArray}`)
-      const questions = questionArray.map((question, index) => ({
-        ...question,
-        next: index === questionArray.length - 1 ? null : index + 1
-      }));
+  return Promise.all([User.hashPassword(password), Question.find()])
+    .then(([digest, res]) => {
+      let questionArray = [];
+      for (let i = 0; i < res.length; i++) {
+        questionArray.push(res[i]);
+      }
+      let questions = questionArray.map((question, index) => {
+        return ({
+          imageURL: question.imageURL,
+          imageDescription: question.imageDescription,
+          answer: question.answer,
+          questionId: question.id,
+          next : index === questionArray.length - 1 ? null : index + 1});
+      });
+
       const newUser = {
         username,
         password: digest,
@@ -107,7 +115,7 @@ router.post("/", (req, res, next) => {
     })
     .catch(err => {
       if (err.code === 11000) {
-        err = new Error("The username already exists");
+        err = new Error('The username already exists');
         err.status = 400;
       }
       next(err);

@@ -23,7 +23,8 @@ mongoose
   .then(() => {
     console.info('Seeding Database');
     return Promise.all([
-      Question.insertMany(seedQuestions)
+      Question.insertMany(seedQuestions),
+      User.insertMany(seedUsers)
       // Record.insertMany(seedRecords)
     ]);
   })

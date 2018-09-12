@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -11,10 +11,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  name: { type: String, default: "" },
+  name: { type: String, default: '' },
   questions: [
     {
-      _id: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
+      questionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
       imageURL: String,
       imageDescription: String,
       answer: String,
@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema({
   head: { type: Number, default: 0 }
 });
 
-UserSchema.set("toObject", {
+UserSchema.set('toObject', {
   virtuals: true, // include built-in virtual `id`
   versionKey: false, // remove `__v` version key
   transform: (doc, ret) => {
@@ -36,8 +36,8 @@ UserSchema.set("toObject", {
 
 UserSchema.methods.serialize = function() {
   return {
-    username: this.username || "",
-    name: this.name || ""
+    username: this.username || '',
+    name: this.name || ''
   };
 };
 
@@ -49,4 +49,4 @@ UserSchema.statics.hashPassword = function(password) {
   return bcrypt.hash(password, 10);
 };
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model('User', UserSchema);
