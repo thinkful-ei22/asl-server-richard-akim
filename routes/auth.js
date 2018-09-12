@@ -18,7 +18,6 @@ function createAuthToken(user) {
 }
 
 router.post("/login", localAuth, (req, res) => {
-  console.log("endpoint hit!@!!");
   const authToken = createAuthToken(req.user);
   res.json({ authToken });
 });

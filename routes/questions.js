@@ -19,15 +19,64 @@ router.get("/", jwtAuth, (req, res, next) => {
 
   User.findOne({ _id: userId })
     .then(result => result.questions[result.head])
-    .then(data => res.json(data))
+    .then(data => res.status(200).json(data))
+    .catch(err => next(err));
+});
+
+router.put('/reset', jwtAuth, (req, res, next) => {
+  const userId = req.user.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error("The `userId` is not valid");
+    err.status = 400;
+    return next(err);
+  }
+
+  const shuffle = (array) => {
+    let currentIndex = array.length, temporaryValue, randomIndex;
+    while(0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  };
+
+  Question.find()
+    .then(result => {
+      let questionArray = [];
+      for (let i = 0; i < result.length; i++) {
+        questionArray.push(result[i]);
+      }
+      questionArray = shuffle(questionArray);
+      let questions = questionArray.map((question, index) => {
+        return ({
+          imageURL: question.imageURL,
+          imageDescription: question.imageDescription,
+          answer: question.answer,
+          questionId: question.id,
+          next : index === questionArray.length - 1 ? null : index + 1});
+      });
+      return questions;
+    })
+    .then(array => User.findOneAndUpdate({ _id: userId }, {$set: {questions: array}}))
+    .then(result => {
+      if (result) {
+        res.status(205).end();
+      } else {
+        next();
+      }
+    })
     .catch(err => next(err));
 });
 
 router.post("/", jwtAuth, (req, res, next) => {
   const userId = req.user.id;
   const { correct } = req.body;
-  let answeredHead;
-  let answeredNode;
+  let answeredHead, answeredNode;
   User.findOne({ _id: userId })
     .then(user => {
       answeredHead = user.head;
@@ -56,7 +105,7 @@ router.post("/", jwtAuth, (req, res, next) => {
     ]))
     .then(([result,head]) => {
       if (result) {
-        res.json(result.questions[head]);
+        res.status(200).json(result.questions[head]);
       } else {
         next();
       }
