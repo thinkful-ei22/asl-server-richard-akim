@@ -61,14 +61,15 @@ router.post("/", jwtAuth, (req, res, next) => {
       // user.head = nextHead;
       answeredNode.next = nextNode.next;
       nextNode.next = answeredHead;
-      return user.save();
+      return Promise.all([user.save(), answeredHead]);
     })
-    .then(result =>
-      User.findOneAndUpdate({ _id: userId }, result, { new: true })
-    )
-    .then(result => {
+    .then(([result, head]) => Promise.all([
+      User.findOneAndUpdate({ _id: userId }, result, { new: true }),
+      head
+    ]))
+    .then(([result,head]) => {
       if (result) {
-        res.json(result);
+        res.json(result.questions[head]);
       } else {
         next();
       }
