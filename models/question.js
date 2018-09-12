@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const QuestionSchema = new mongoose.Schema({
   imageURL: String,
@@ -6,7 +6,7 @@ const QuestionSchema = new mongoose.Schema({
   answer: String
 });
 
-QuestionSchema.set("toObject", {
+QuestionSchema.set('toObject', {
   virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
@@ -14,4 +14,4 @@ QuestionSchema.set("toObject", {
   }
 });
 
-module.exports = mongoose.model("Question", QuestionSchema);
+module.exports = mongoose.model('Question', QuestionSchema);

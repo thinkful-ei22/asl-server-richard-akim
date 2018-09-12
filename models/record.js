@@ -1,20 +1,20 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const RecordSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true
   },
   questionId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Question"
+    ref: 'Question'
   },
   correct: { type: Number, default: 0 },
   incorrect: { type: Number, default: 0 }
 });
 
-RecordSchema.set("toObject", {
+RecordSchema.set('toObject', {
   virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
@@ -22,4 +22,4 @@ RecordSchema.set("toObject", {
   }
 });
 
-module.exports = mongoose.model("Record", RecordSchema);
+module.exports = mongoose.model('Record', RecordSchema);
