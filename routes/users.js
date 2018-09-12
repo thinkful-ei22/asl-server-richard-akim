@@ -1,6 +1,7 @@
 const express = require("express");
 
 const User = require("../models/user");
+const Question = require("../models/question");
 
 const router = express.Router();
 
@@ -83,12 +84,18 @@ router.post("/", (req, res, next) => {
 
   let { username, password, name = "" } = req.body;
 
-  return User.hashPassword(password)
-    .then(digest => {
+  return Promise.all([User.hashPassword(password), Question.find().toArray()])
+    .then(([digest, questionArray]) => {
+      console.log(`1. digest: ${digest}, questionArray: ${questionArray}`)
+      const questions = questionArray.map((question, index) => ({
+        ...question,
+        next: index === questionArray.length - 1 ? null : index + 1
+      }));
       const newUser = {
         username,
         password: digest,
-        name
+        name,
+        questions
       };
       return User.create(newUser);
     })
