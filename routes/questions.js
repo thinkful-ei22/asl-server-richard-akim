@@ -8,12 +8,6 @@ const User = require("../models/user");
 
 const jwtAuth = passport.authenticate("jwt", { session: false });
 
-// router.get('/', (req, res, next) => {
-//   Question.aggregate([ { $sample: { size: 1 } } ])
-//     .then(question => res.json(question[0]))
-//     .catch(err => next(err));
-// });
-
 router.get("/", jwtAuth, (req, res, next) => {
   const userId = req.user.id;
 
@@ -38,8 +32,6 @@ router.post("/", jwtAuth, (req, res, next) => {
     .then(user => {
       answeredHead = user.head;
       answeredNode = user.questions[answeredHead];
-      // nextHead = user.questions.indexOf(user.questions[user.questions[answeredHead].next]);
-      // console.log('answeredNode', answeredNode);
       correct
         ? (answeredNode.memoryStrength *= 2)
         : (answeredNode.memoryStrength = 1);
@@ -54,11 +46,6 @@ router.post("/", jwtAuth, (req, res, next) => {
       if (answeredNode.memoryStrength > user.questions.length) {
         nextNode = user.questions[user.questions.length - 1];
       }
-      // console.log('answeredNode', answeredNode);
-      // console.log('resultNode ', result.questions[answeredHead]);
-      // user.questions[answeredHead].next = answeredNode.next;
-      // answeredNode.next = answeredHead;
-      // user.head = nextHead;
       answeredNode.next = nextNode.next;
       nextNode.next = answeredHead;
       return Promise.all([user.save(), answeredHead]);
