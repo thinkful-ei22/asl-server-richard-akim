@@ -6,9 +6,9 @@ const passport = require("passport");
 const Question = require("../models/question");
 const User = require("../models/user");
 
-const jwtAuth = passport.authenticate("jwt", { session: false });
+router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
-router.get("/", jwtAuth, (req, res, next) => {
+router.get("/", (req, res, next) => {
   const userId = req.user.id;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -23,7 +23,7 @@ router.get("/", jwtAuth, (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.put('/reset', jwtAuth, (req, res, next) => {
+router.put('/reset', (req, res, next) => {
   const userId = req.user.id;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -76,7 +76,7 @@ router.put('/reset', jwtAuth, (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.post("/", jwtAuth, (req, res, next) => {
+router.post("/", (req, res, next) => {
   const userId = req.user.id;
   const { correct } = req.body;
   let answeredHead, answeredNode;
