@@ -25,7 +25,8 @@ app.use(
 
 app.use(
   cors({
-    origin: '*'
+    origin: '*',
+    allowedHeaders:['Content-Type','Authorization']
   })
 );
 
