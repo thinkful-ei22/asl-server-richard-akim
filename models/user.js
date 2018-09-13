@@ -24,7 +24,9 @@ const UserSchema = new mongoose.Schema({
       incorrect: { type: Number, default: 0 }
     }
   ],
-  head: { type: Number, default: 0 }
+  head: { type: Number, default: 0 },
+  totalCorrect: { type:Number, default: 0}, 
+  totalWrong : { type:Number, default:0 }
 });
 
 UserSchema.set("toObject", {
