@@ -24,12 +24,9 @@ app.use(
 );
 app.use(express.json());
 app.use(
-  cors(
-  //   {
-  //   origin: CLIENT_ORIGIN, 
-  //   allowedHeaders:['Content-Type','Authorization']
-  // }
-  )
+  cors({
+    origin: CLIENT_ORIGIN
+  })
 );
 // app.use((req, res, next) => { 
 //   res.header('Access-Control-Allow-Origin', '*'); 

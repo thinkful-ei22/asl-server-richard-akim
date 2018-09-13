@@ -1,5 +1,6 @@
 const express = require('express');
-
+const passport = require("passport");
+const mongoose = require("mongoose");
 const User = require('../models/user');
 const Question = require('../models/question');
 
@@ -134,6 +135,31 @@ router.post('/', (req, res, next) => {
       }
       next(err);
     });
+});
+
+const jwtAuth = passport.authenticate("jwt", { session: false });
+
+router.get('/progress', jwtAuth, (req, res, next) => {
+  const userId = req.user.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    const err = new Error("The `userId` is not valid");
+    err.status = 400;
+    return next(err);
+  }
+
+  let response = {};
+  User.findOne({_id:userId})
+    .then(user => {
+      if (user) {
+        response.correct = user.totalCorrect;
+        response.wrong = user.totalWrong;
+        res.status(200).json(response);
+      } else {
+        next();
+      }      
+    })
+    .catch(err => next(err));
 });
 
 module.exports = router;

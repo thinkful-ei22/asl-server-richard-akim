@@ -6,10 +6,9 @@ const passport = require("passport");
 const Question = require("../models/question");
 const User = require("../models/user");
 
+const jwtAuth = passport.authenticate("jwt", { session: false });
 
-
-router.get("/", (req, res, next) => {
-  console.log(req.user);
+router.get("/", jwtAuth, (req, res, next) => {
   const userId = req.user.id;
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     const err = new Error("The `userId` is not valid");
@@ -23,7 +22,7 @@ router.get("/", (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.put('/reset', (req, res, next) => {
+router.put('/reset', jwtAuth, (req, res, next) => {
   const userId = req.user.id;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -47,7 +46,6 @@ router.put('/reset', (req, res, next) => {
 
   Question.find()
     .then(result => {
-      
       let questionArray = [];
       for (let i = 0; i < result.length; i++) {
         questionArray.push(result[i]);
@@ -64,7 +62,7 @@ router.put('/reset', (req, res, next) => {
       return questions;
     })
     .then(array => {
-      return User.findOneAndUpdate({ _id: userId }, {$set: {questions: array}}, { new: true });  
+      return User.findOneAndUpdate({ _id: userId }, {$set: {questions: array, totalCorrect: 0, totalWrong: 0, head: 0}}, { new: true });
     })
     .then(result => {
       if (result) {
@@ -76,21 +74,31 @@ router.put('/reset', (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", jwtAuth, (req, res, next) => {
   const userId = req.user.id;
   const { correct } = req.body;
   let answeredHead, answeredNode;
   User.findOne({ _id: userId })
     .then(user => {
+
       answeredHead = user.head;
       answeredNode = user.questions[answeredHead];
       correct
         ? (answeredNode.memoryStrength *= 2)
         : (answeredNode.memoryStrength = 1);
+      correct
+        ? user.totalCorrect += 1
+        : user.totalWrong += 1;
       correct ? (answeredNode.correct += 1) : (answeredNode.incorrect += 1);
-
+      // pushes question into needs improve array if ratio is lowest 3
+      let succussRatio = answeredNode.correct/(answeredNode.correct+answeredNode.incorrect);
+      switch(user.needImprove.length) {
+      default: 
+        console.log(answeredNode);
+      }
       user.head = answeredNode.next;
       let nextNode = answeredNode;
+
       for (let i = 0; i < answeredNode.memoryStrength + 1; i++) {
         nextNode = user.questions[nextNode.next];
       }
@@ -100,6 +108,7 @@ router.post("/", (req, res, next) => {
       }
       answeredNode.next = nextNode.next;
       nextNode.next = answeredHead;
+      
       return Promise.all([user.save(), answeredHead]);
     })
     .then(([result, head]) => Promise.all([
