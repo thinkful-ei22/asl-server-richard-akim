@@ -6,7 +6,6 @@ const passport = require("passport");
 const Question = require("../models/question");
 const User = require("../models/user");
 
-router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 
 router.get("/", (req, res, next) => {
