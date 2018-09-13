@@ -8,6 +8,7 @@ const User = require("../models/user");
 
 router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
+
 router.get("/", (req, res, next) => {
   const userId = req.user.id;
 
