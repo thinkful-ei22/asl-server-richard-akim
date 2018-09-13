@@ -26,7 +26,8 @@ const UserSchema = new mongoose.Schema({
   ],
   head: { type: Number, default: 0 },
   totalCorrect: { type:Number, default: 0}, 
-  totalWrong : { type:Number, default:0 }
+  totalWrong : { type:Number, default:0 },
+  needImprove : [{questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" }}]
 });
 
 UserSchema.set("toObject", {

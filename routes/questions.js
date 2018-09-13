@@ -91,7 +91,16 @@ router.post("/", jwtAuth, (req, res, next) => {
         ? user.totalCorrect += 1
         : user.totalWrong += 1;
       correct ? (answeredNode.correct += 1) : (answeredNode.incorrect += 1);
+      // pushes question into needs improve array if ratio is lowest 3
+      let succussRatio = user.totalCorrect/(user.totalCorrect+user.totalWrong);
+      // if (user.needImprove.length < 3) {
+      //   let first; 
+      //   let second;
+      //   let third;
+      //   for(let i = 0; i < user.needImprove.length; i++) {
 
+      //   }
+      // } 
       user.head = answeredNode.next;
       let nextNode = answeredNode;
 
