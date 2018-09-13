@@ -10,14 +10,14 @@ router.use('/', passport.authenticate('jwt', { session: false, failWithError: tr
 
 
 router.get("/", (req, res, next) => {
+  console.log(req.user);
   const userId = req.user.id;
-
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     const err = new Error("The `userId` is not valid");
     err.status = 400;
     return next(err);
   }
-
+  console.log(userId);
   User.findOne({ _id: userId })
     .then(result => result.questions[result.head])
     .then(data => res.status(200).json(data))
