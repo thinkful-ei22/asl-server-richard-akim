@@ -1,2 +1,9 @@
 language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: mlKzYvSx8+BCjIMXj7tjU+kvXXwKB61YoRfOhCb0ABYaOaD0Gg/gJalEBFWJHEFZhmUSVpovsUWviv7osc7euyF613KQJJR4A14bicIhUfsGocHqltpTf3MCD2vA05Z4qzLnJcq0vYBVySc/byYhlZbv7LdwA/TAKjTTBLhBefTd6PZXVv+4Kn4efqxI0ssm9scFUaNWmfqyBU9q6HSbtdmG7zfLnUi7QHpxOImuXi6Jp0rZb1JkF/e9lbd5tYF+IJBhcrdvDQ36+ntKcjIEuiVwisfWRzWAti9+66063wkDIYcfz64BzjVy8WeW5hxJfo4lMvQTQhaJD0JiqUeJtKwo+a9QKeutEAKOtGan1vxFIRRTnEJVEl1JqBDqbMQh1f34xN1LIpsl+UZRRFGQj+9qEC5Q4GEebYGJttS2DquGAG3ho7W3fBzXWAv1RHQ3bfJIO0XNMBJsLRgqmHna0ZjufFbeDAgvXIQsrGReVra88xWz8gXR9WwxQ+3th1YY1MVuiD7Oe4ATC86Kqv40SoWYZZxSzERQSYRDnvWjEHGxylhAe8ceBdrx3Pluvz+b2JBNULafzalIlpj7EcgVAD2Jpj+8H2YkI/FV47kOP5hnYQM9/fh1hWhh1SOSJc7UXlHAlku3rHl1xFf/5LIjy5tDQmzEap5TzOU12pqwRLY=
+  app: sign-app-server
+  on:
+    repo: thinkful-ei22/asl-server-richard-akim
