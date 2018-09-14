@@ -154,6 +154,7 @@ router.get('/progress', jwtAuth, (req, res, next) => {
       if (user) {
         response.correct = user.totalCorrect;
         response.wrong = user.totalWrong;
+        response.needImprove = user.needImprove;
         res.status(200).json(response);
       } else {
         next();
