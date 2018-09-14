@@ -24,7 +24,6 @@ router.get("/", jwtAuth, (req, res, next) => {
 
 router.put('/reset', jwtAuth, (req, res, next) => {
   const userId = req.user.id;
-
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     const err = new Error("The `userId` is not valid");
     err.status = 400;

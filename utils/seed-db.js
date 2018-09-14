@@ -4,8 +4,6 @@ const mongoose = require('mongoose');
 const { DATABASE_URL } = require('../config');
 const Question = require('../models/question');
 const seedQuestions = require('../db/seed/questions.json');
-const Record = require('../models/record');
-const seedRecords = require('../db/seed/records.json');
 const User = require('../models/user');
 const seedUsers = require('../db/seed/users.json');
 
