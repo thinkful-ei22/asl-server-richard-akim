@@ -15,7 +15,7 @@ router.get("/", jwtAuth, (req, res, next) => {
     err.status = 400;
     return next(err);
   }
-  console.log(userId);
+  
   User.findOne({ _id: userId })
     .then(result => result.questions[result.head])
     .then(data => res.status(200).json(data))
@@ -77,6 +77,12 @@ router.put('/reset', jwtAuth, (req, res, next) => {
 router.post("/", jwtAuth, (req, res, next) => {
   const userId = req.user.id;
   const { correct } = req.body;
+
+  if (typeof correct !== 'boolean') {
+    const err = new Error("The `correct` is not boolean");
+    err.status = 400;
+    return next(err);
+  }
   let answeredHead, answeredNode;
   User.findOne({ _id: userId })
     .then(user => {
@@ -124,8 +130,6 @@ router.post("/", jwtAuth, (req, res, next) => {
           }
         }
       }
-      console.log(user.needImprove);
-
 
       user.head = answeredNode.next;
       let nextNode = answeredNode;
