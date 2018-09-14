@@ -27,7 +27,16 @@ const UserSchema = new mongoose.Schema({
   head: { type: Number, default: 0 },
   totalCorrect: { type:Number, default: 0}, 
   totalWrong : { type:Number, default:0 },
-  needImprove : [{questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" }}]
+  needImprove : [{
+    // questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
+    imageURL: String,
+    imageDescription: String,
+    answer: String,
+    // memoryStrength: { type: Number, default: 1 },
+    // next: Number,
+    correct: { type: Number, default: 0 },
+    incorrect: { type: Number, default: 0 }
+  }]
 });
 
 UserSchema.set("toObject", {

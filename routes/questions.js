@@ -63,7 +63,7 @@ router.put('/reset', jwtAuth, (req, res, next) => {
       return questions;
     })
     .then(array => {
-      return User.findOneAndUpdate({ _id: userId }, {$set: {questions: array, totalCorrect: 0, totalWrong: 0, head: 0}}, { new: true });
+      return User.findOneAndUpdate({ _id: userId }, {$set: {questions: array, totalCorrect: 0, totalWrong: 0, head: 0, needImprove: []}}, { new: true });
     })
     .then(result => {
       if (result) {
@@ -81,7 +81,6 @@ router.post("/", jwtAuth, (req, res, next) => {
   let answeredHead, answeredNode;
   User.findOne({ _id: userId })
     .then(user => {
-
       answeredHead = user.head;
       answeredNode = user.questions[answeredHead];
       correct
@@ -93,10 +92,42 @@ router.post("/", jwtAuth, (req, res, next) => {
       correct ? (answeredNode.correct += 1) : (answeredNode.incorrect += 1);
       // pushes question into needs improve array if ratio is lowest 3
       let succussRatio = answeredNode.correct/(answeredNode.correct+answeredNode.incorrect);
-      switch(user.needImprove.length) {
-      default: 
-        console.log(answeredNode);
+    
+      if (user.needImprove.length < 3) {
+        user.needImprove.push(answeredNode);
+        user.needImprove.sort((a,b) => 
+          (a.correct/(a.correct+a.incorrect)) - (b.correct/(b.correct+b.incorrect))
+        );
+      } else {
+        let idInArray = (node) => node.id === answeredNode.id;
+        if (user.needImprove.some(idInArray)) {
+          for (let i = 0; i < user.needImprove.length; i++) {
+            if (user.needImprove[i].id === answeredNode.id) {
+              user.needImprove[i] = answeredNode;
+            }
+          }
+          user.needImprove.sort((a,b) => 
+            (a.correct/(a.correct+a.incorrect)) - (b.correct/(b.correct+b.incorrect))
+          );
+        } else {
+          if (user.needImprove.length === 3) {
+            // since we know the length of the array we can do direct compares
+            if (succussRatio < user.needImprove[0].correct/(user.needImprove[0].correct + user.needImprove[0].incorrect)) {
+              user.needImprove.unshift(answeredNode);
+              user.needImprove.pop();
+            } else if (succussRatio < user.needImprove[1].correct/(user.needImprove[1].correct + user.needImprove[1].incorrect)) {
+              user.needImprove.splice(1, 0, answeredNode);
+              user.needImprove.pop();
+            } else if (succussRatio < user.needImprove[2].correct/(user.needImprove[2].correct + user.needImprove[2].incorrect)) {
+              user.needImprove.pop();
+              user.needImprove.push(answeredNode);
+            } 
+          }
+        }
       }
+      console.log(user.needImprove);
+
+
       user.head = answeredNode.next;
       let nextNode = answeredNode;
 
